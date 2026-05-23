@@ -1,0 +1,17 @@
+{
+  "name": "codxus",
+  "private": true,
+  "packageManager": "pnpm@11.2.1",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint"
+  },
+  "devDependencies": {
+    "turbo": "^2.9.14"
+  },
+  "author": "Harlex",
+  "license": "ISC"
+}
