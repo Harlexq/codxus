@@ -1,9 +1,9 @@
-import Link from "next/link";
+import Link from 'next/link';
 
 const Logo = () => {
   return (
-    <Link href="/" className="flex items-center gap-3 group">
-      <div className="bg-white rounded-xs w-5 h-5 rotate-45 group-hover:rotate-180 transition-all duration-300 ease-in-out" />
+    <Link href="/" className="group flex items-center gap-3">
+      <div className="h-5 w-5 rotate-45 rounded-xs bg-white transition-all duration-300 ease-in-out group-hover:rotate-180" />
       <p className="text-2xl font-bold text-white">Codxus</p>
     </Link>
   );

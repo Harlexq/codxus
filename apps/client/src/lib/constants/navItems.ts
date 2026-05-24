@@ -1,45 +1,35 @@
-import { NavItem } from "@/components/layout/header/types";
-import {
-  Book,
-  Brain,
-  Clock3,
-  Code2,
-  FileText,
-  Folder,
-  Layers,
-  Shield,
-  Users,
-} from "lucide-react";
+import { NavItem } from '@/components/layout/header/types';
+import { Book, Brain, Clock3, Code2, FileText, Folder, Layers, Shield, Users } from 'lucide-react';
 
 export const navItems: NavItem[] = [
   {
     id: 1,
-    title: "Ürün",
-    key: "product",
+    title: 'Ürün',
+    key: 'product',
     children: [
       {
         id: 1,
-        title: "Temel Özellikler",
+        title: 'Temel Özellikler',
         items: [
           {
             id: 1,
-            title: "AI Bilgi Sistemi",
-            href: "/features/ai",
-            desc: "AI ile otomatik doküman oluştur.",
+            title: 'AI Bilgi Sistemi',
+            href: '/features/ai',
+            desc: 'AI ile otomatik doküman oluştur.',
             icon: Brain,
           },
           {
             id: 2,
-            title: "Workspace Yönetimi",
-            href: "/features/workspaces",
-            desc: "Ekiplerini ve projelerini düzenle.",
+            title: 'Workspace Yönetimi',
+            href: '/features/workspaces',
+            desc: 'Ekiplerini ve projelerini düzenle.',
             icon: Folder,
           },
           {
             id: 3,
-            title: "Markdown Editör",
-            href: "/features/editor",
-            desc: "Obsidian tarzı hızlı yazım deneyimi.",
+            title: 'Markdown Editör',
+            href: '/features/editor',
+            desc: 'Obsidian tarzı hızlı yazım deneyimi.',
             icon: FileText,
           },
         ],
@@ -47,19 +37,19 @@ export const navItems: NavItem[] = [
 
       {
         id: 2,
-        title: "İş Birliği",
+        title: 'İş Birliği',
         items: [
           {
             id: 4,
-            title: "Rol Sistemi",
-            href: "/features/roles",
-            desc: "Kullanıcı yetkilerini yönet.",
+            title: 'Rol Sistemi',
+            href: '/features/roles',
+            desc: 'Kullanıcı yetkilerini yönet.',
             icon: Shield,
           },
           {
             id: 5,
-            title: "Davet Sistemi",
-            href: "/features/invite",
+            title: 'Davet Sistemi',
+            href: '/features/invite',
             desc: "Takım üyelerini workspace'e ekle.",
             icon: Users,
           },
@@ -69,25 +59,25 @@ export const navItems: NavItem[] = [
   },
   {
     id: 2,
-    title: "Çözümler",
-    key: "solutions",
+    title: 'Çözümler',
+    key: 'solutions',
     children: [
       {
         id: 1,
-        title: "Takımlar",
+        title: 'Takımlar',
         items: [
           {
             id: 1,
-            title: "Yazılım Takımları",
-            href: "/solutions/engineering",
-            desc: "Teknik dokümantasyon merkezi.",
+            title: 'Yazılım Takımları',
+            href: '/solutions/engineering',
+            desc: 'Teknik dokümantasyon merkezi.',
             icon: Code2,
           },
           {
             id: 2,
-            title: "Ürün Takımları",
-            href: "/solutions/product",
-            desc: "Tüm ürün bilgisini tek yerde topla.",
+            title: 'Ürün Takımları',
+            href: '/solutions/product',
+            desc: 'Tüm ürün bilgisini tek yerde topla.',
             icon: Layers,
           },
         ],
@@ -96,25 +86,25 @@ export const navItems: NavItem[] = [
   },
   {
     id: 3,
-    title: "Kaynaklar",
-    key: "resources",
+    title: 'Kaynaklar',
+    key: 'resources',
     children: [
       {
         id: 1,
-        title: "Öğren",
+        title: 'Öğren',
         items: [
           {
             id: 1,
-            title: "Dokümantasyon",
-            href: "/docs",
-            desc: "Codxus nasıl çalışır öğren.",
+            title: 'Dokümantasyon',
+            href: '/docs',
+            desc: 'Codxus nasıl çalışır öğren.',
             icon: Book,
           },
           {
             id: 2,
-            title: "Güncellemeler",
-            href: "/changelog",
-            desc: "Yeni özellikleri takip et.",
+            title: 'Güncellemeler',
+            href: '/changelog',
+            desc: 'Yeni özellikleri takip et.',
             icon: Clock3,
           },
         ],
@@ -123,7 +113,7 @@ export const navItems: NavItem[] = [
   },
   {
     id: 4,
-    title: "Fiyatlandırma",
-    href: "/pricing",
+    title: 'Fiyatlandırma',
+    href: '/pricing',
   },
 ];

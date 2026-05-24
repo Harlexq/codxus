@@ -1,10 +1,10 @@
-"use client";
-import { ChevronDown } from "lucide-react";
-import Link from "next/link";
-import { FC } from "react";
-import { AnimatePresence } from "motion/react";
-import * as motion from "motion/react-client";
-import type { NavItem } from "../types";
+'use client';
+import { ChevronDown } from 'lucide-react';
+import Link from 'next/link';
+import { FC } from 'react';
+import { AnimatePresence } from 'motion/react';
+import * as motion from 'motion/react-client';
+import type { NavItem } from '../types';
 
 interface NavItemProps {
   item: NavItem;
@@ -18,13 +18,13 @@ const NavItem: FC<NavItemProps> = ({ item, activeMenu, setActiveMenu }) => {
       <Link
         href={item.href}
         onMouseEnter={() => setActiveMenu(null)}
-        className="group text-neutral-400 transition-all duration-300 ease-out hover:bg-neutral-800 hover:text-gray-100 text-sm flex items-center gap-1 py-1.5 px-3 rounded-full"
+        className="group flex items-center gap-1 rounded-full px-3 py-1.5 text-sm text-neutral-400 transition-all duration-300 ease-out hover:bg-neutral-800 hover:text-gray-100"
       >
         {item.title}
         {item.children && (
           <ChevronDown
             size={15}
-            className="group-hover:rotate-180 transition-all duration-300 ease-in-out"
+            className="transition-all duration-300 ease-in-out group-hover:rotate-180"
           />
         )}
       </Link>
@@ -36,13 +36,13 @@ const NavItem: FC<NavItemProps> = ({ item, activeMenu, setActiveMenu }) => {
       <button
         type="button"
         onMouseEnter={() => setActiveMenu(item.key ?? null)}
-        className="group text-neutral-400 transition-all duration-300 ease-out hover:bg-neutral-800 hover:text-gray-100 text-sm flex items-center gap-1 py-1.5 px-3 rounded-full cursor-pointer"
+        className="group flex cursor-pointer items-center gap-1 rounded-full px-3 py-1.5 text-sm text-neutral-400 transition-all duration-300 ease-out hover:bg-neutral-800 hover:text-gray-100"
       >
         {item.title}
         {item.children && (
           <ChevronDown
             size={15}
-            className="group-hover:rotate-180 transition-all duration-300 ease-in-out"
+            className="transition-all duration-300 ease-in-out group-hover:rotate-180"
           />
         )}
       </button>
@@ -54,8 +54,8 @@ const NavItem: FC<NavItemProps> = ({ item, activeMenu, setActiveMenu }) => {
               initial={{ opacity: 0, y: -8, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.97 }}
-              transition={{ type: "spring", stiffness: 400, damping: 28 }}
-              className="rounded-xl border border-neutral-800 bg-neutral-950 p-4 shadow-2xl w-max"
+              transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+              className="w-max rounded-xl border border-neutral-800 bg-neutral-950 p-4 shadow-2xl"
             >
               <div
                 className="grid gap-8"
@@ -65,23 +65,23 @@ const NavItem: FC<NavItemProps> = ({ item, activeMenu, setActiveMenu }) => {
               >
                 {item.children.map((child) => (
                   <div key={child.id} className="flex flex-col gap-1">
-                    <p className="text-xs font-semibold text-neutral-500 tracking-wider mb-2">
-                      {child.title.toLocaleUpperCase("tr-TR")}
+                    <p className="mb-2 text-xs font-semibold tracking-wider text-neutral-500">
+                      {child.title.toLocaleUpperCase('tr-TR')}
                     </p>
                     {child.items.map((subItem) => (
                       <Link
                         key={subItem.id}
                         href={subItem.href}
-                        className="group flex items-center gap-3 rounded-lg p-2 hover:bg-neutral-800 transition-colors duration-150"
+                        className="group flex items-center gap-3 rounded-lg p-2 transition-colors duration-150 hover:bg-neutral-800"
                       >
-                        <span className="text-zinc-500 bg-zinc-900 border border-zinc-700 group-hover:bg-white group-hover:border-white group-hover:text-black rounded-md transition-colors duration-150 w-8 h-8 flex items-center justify-center shrink-0">
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-zinc-700 bg-zinc-900 text-zinc-500 transition-colors duration-150 group-hover:border-white group-hover:bg-white group-hover:text-black">
                           <subItem.icon size={16} />
                         </span>
                         <div className="flex flex-col">
-                          <span className="text-sm font-medium text-neutral-300 group-hover:text-white transition-colors duration-150 whitespace-nowrap">
+                          <span className="text-sm font-medium whitespace-nowrap text-neutral-300 transition-colors duration-150 group-hover:text-white">
                             {subItem.title}
                           </span>
-                          <span className="text-xs text-zinc-500 group-hover:text-zinc-200 transition-colors duration-150 whitespace-nowrap">
+                          <span className="text-xs whitespace-nowrap text-zinc-500 transition-colors duration-150 group-hover:text-zinc-200">
                             {subItem.desc}
                           </span>
                         </div>
