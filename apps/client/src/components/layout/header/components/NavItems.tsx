@@ -7,7 +7,7 @@ const NavItems = () => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
 
   return (
-    <nav className="flex items-center gap-3" onMouseLeave={() => setActiveMenu(null)}>
+    <nav className="hidden items-center gap-3 lg:flex" onMouseLeave={() => setActiveMenu(null)}>
       {navItems.map((item) => (
         <NavItem item={item} activeMenu={activeMenu} setActiveMenu={setActiveMenu} key={item.id} />
       ))}

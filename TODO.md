@@ -1,15 +1,16 @@
 # Frontend
 
-- prettier tailwind prettier
 - vitest
 - playwright
 - storybook
 - react hook form
 - js-cookie
-- motion
 - zod
 - msw
 - sentry
+
+- logoya size variants
+
 
 # Backend
 
