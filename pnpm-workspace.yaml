@@ -3,6 +3,7 @@ packages:
   - "packages/*"
 allowBuilds:
   '@nestjs/core': true
+  '@scarf/scarf': true
   msw: true
   sharp: true
   unrs-resolver: true
