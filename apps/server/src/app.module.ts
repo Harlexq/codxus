@@ -7,6 +7,7 @@ import { ResponseInterceptor } from './common/interceptors/response.interceptor'
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { LoggerModule } from './core/logger/logger.module';
+import { PrismaModule } from './database/prisma.module';
 
 const ENVIRONMENT = process.env.NODE_ENV || 'development';
 
@@ -18,6 +19,7 @@ const ENVIRONMENT = process.env.NODE_ENV || 'development';
       validationSchema: envValidationSchema,
     }),
     LoggerModule,
+    PrismaModule,
   ],
   controllers: [],
   providers: [
