@@ -2,6 +2,11 @@ node_modules/
 /.pnp
 .pnp.*
 
+# editors
+.vscode/
+.turbo/
+.idea/
+
 # env files
 .env
 .env.development
