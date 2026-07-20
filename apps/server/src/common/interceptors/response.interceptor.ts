@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { map, Observable } from 'rxjs';
 import { Request, Response } from 'express';
-import { StandardResponse } from 'src/core/interfaces/standard-response.interface';
+import { StandardResponse } from 'codxus-shared';
 
 @Injectable()
 export class ResponseInterceptor<T> implements NestInterceptor<

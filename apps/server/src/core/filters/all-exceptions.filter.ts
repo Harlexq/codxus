@@ -5,7 +5,7 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { ErrorResponse } from '../interfaces/error-response.interface';
+import { ErrorResponse } from 'codxus-shared';
 import { Request, Response } from 'express';
 
 @Catch(HttpException)
