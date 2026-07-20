@@ -8,6 +8,7 @@ import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { LoggerModule } from './core/logger/logger.module';
 import { PrismaModule } from './database/prisma.module';
+import { AccountModule } from './domains/account/account.module';
 
 const ENVIRONMENT = process.env.NODE_ENV || 'development';
 
@@ -20,6 +21,7 @@ const ENVIRONMENT = process.env.NODE_ENV || 'development';
     }),
     LoggerModule,
     PrismaModule,
+    AccountModule,
   ],
   controllers: [],
   providers: [

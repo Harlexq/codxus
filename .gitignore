@@ -1,3 +1,10 @@
 node_modules/
 /.pnp
 .pnp.*
+
+# env files
+.env
+.env.development
+.env.production
+.env.test
+.env.local
