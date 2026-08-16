@@ -8,23 +8,95 @@ datasource db {
   provider = "postgresql"
 }
 
-enum Role {
+// Kullanicinin yasam dongusu. emailVerifiedAt'ten ayri tutuluyor: biri
+// "ne zaman dogrulandi" olayi, digeri "su an hangi durumda" bilgisi.
+// Dogrulanmis ama askiya alinmis bir kullanici ikisinin ayri olmasini gerektirir.
+enum UserStatus {
+  PENDING_VERIFICATION
+  ACTIVE
+  SUSPENDED
+  DELETED
+
+  @@map("user_status")
+}
+
+// DIKKAT: bu bir IZIN rolu degil, meslek/unvandir. Yetkilendirme ileride
+// Company ve Workspace bazli membership tablosunda olacak; User uzerinde
+// global bir role alani bilerek YOK.
+enum JobTitle {
   DEVELOPER
   DESIGNER
   PROJECT_MANAGER
-  OWNER
   FREELANCER
+  FOUNDER
+
+  @@map("job_title")
 }
 
 model User {
-  id              String   @id @default(cuid())
-  firstName       String
-  lastName        String
-  email           String   @unique
-  avatarUrl       String?
-  role            Role?
-  hashedPassword  String
-  isEmailVerified Boolean  @default(false)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id String @id @default(uuid(7)) @db.Uuid
+
+  // Her zaman normalize (trim + lowercase) halde yazilir; normalizasyon
+  // DTO katmaninda @TrimLower ile yapilir. citext eklentisi kullanilmiyor:
+  // yetki gerektiriyor, bazi managed DB'lerde kapali ve Unicode
+  // normalizasyonunu zaten cozmuyor.
+  email           String    @unique @db.VarChar(254)
+  emailVerifiedAt DateTime? @map("email_verified_at")
+
+  firstName String @map("first_name") @db.VarChar(64)
+  lastName  String @map("last_name") @db.VarChar(64)
+
+  passwordHash String     @map("password_hash") @db.VarChar(255)
+  jobTitle     JobTitle?  @map("job_title")
+  status       UserStatus @default(PENDING_VERIFICATION)
+  locale       String     @default("tr") @db.VarChar(5)
+
+  // KVKK: "hangi kullanici, hangi metnin hangi surumunu, ne zaman kabul
+  // etti" sorusunun cevabi sonradan uretilemez. Kayit aninda tek onay
+  // kutusu isaretlenir, iki kayit birden yazilir.
+  acceptedTermsAt        DateTime @map("accepted_terms_at")
+  acceptedTermsVersion   String   @map("accepted_terms_version") @db.VarChar(16)
+  acceptedPrivacyAt      DateTime @map("accepted_privacy_at")
+  acceptedPrivacyVersion String   @map("accepted_privacy_version") @db.VarChar(16)
+
+  // Kotuye kullanim analizi icin. inet yerine varchar: RequestContext IP
+  // bulunamadiginda bos string donuyor, inet bos stringi reddeder.
+  // 45 karakter IPv6'nin en uzun gosterimini karsilar.
+  registrationIp String? @map("registration_ip") @db.VarChar(45)
+
+  emailVerificationTokens EmailVerificationToken[]
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@index([deletedAt])
+  @@index([status])
+  @@map("users")
+}
+
+model EmailVerificationToken {
+  id String @id @default(uuid(7)) @db.Uuid
+
+  userId String @map("user_id") @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Ham token DB'ye ASLA yazilmaz, yalnizca SHA-256 hex hash'i (64 karakter).
+  // Token 256-bit rastgele oldugu icin brute-force edilebilir bir entropi
+  // yok; argon2 gibi yavas bir hash gereksiz ve findUnique'i imkansiz kilardi.
+  tokenHash  String    @unique @map("token_hash") @db.VarChar(64)
+  expiresAt  DateTime  @map("expires_at")
+  consumedAt DateTime? @map("consumed_at")
+
+  requestIp String? @map("request_ip") @db.VarChar(45)
+  userAgent String? @map("user_agent") @db.VarChar(512)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Kullanicinin acik token'larini bulmak ve yeni token uretilince
+  // eskileri kapatmak icin.
+  @@index([userId, consumedAt])
+  // Suresi dolmus token'larin periyodik temizligi icin.
+  @@index([expiresAt])
+  @@map("email_verification_tokens")
 }

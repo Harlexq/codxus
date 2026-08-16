@@ -37,8 +37,10 @@ export const envValidationSchema = Joi.object({
   EMAIL_VERIFICATION_TTL_HOURS: Joi.number().integer().min(1).default(24),
   EMAIL_RESEND_COOLDOWN_SECONDS: Joi.number().integer().min(0).default(60),
   HIBP_TIMEOUT_MS: Joi.number().integer().min(500).default(3000),
-  // Kullanicinin kabul ettigi sozlesme surumu; DB'ye bu deger yazilir.
+  // Kullanicinin kabul ettigi metin surumleri; DB'ye bu degerler yazilir.
+  // Metinler degistiginde surum artirilir, eski onaylar kayitli kalir.
   TERMS_VERSION: Joi.string().default('v1'),
+  PRIVACY_VERSION: Joi.string().default('v1'),
 
   // --- Sonraki gorev (login/session) icin ayrilmis ---
   REFRESH_TOKEN_EXPIRES_DAYS: Joi.number().integer().min(1).default(30),
