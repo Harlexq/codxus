@@ -14,6 +14,7 @@ import { ResponseInterceptor } from '@app/core/interceptors/response.interceptor
 import { LoggerModule } from '@app/core/logger/logger.module';
 import { RequestIdMiddleware } from '@app/core/middleware/request-id.middleware';
 import { PrismaModule } from '@app/database/prisma.module';
+import { AuthModule } from '@app/modules/auth/auth.module';
 import { MailModule } from '@app/providers/mail/mail.module';
 import { parseRedisUrl } from '@app/providers/redis/redis.util';
 
@@ -59,6 +60,7 @@ const ENVIRONMENT = process.env.NODE_ENV ?? 'development';
     LoggerModule,
     PrismaModule,
     MailModule,
+    AuthModule,
   ],
   providers: [
     // APP_FILTER / APP_INTERCEPTOR: global filter ve interceptor'lari DI

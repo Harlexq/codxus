@@ -1,5 +1,7 @@
 export const REGEX = {
-  FIRTNAME: /^[a-zA-ZğüşıöçĞÜŞİÖÇ]{2,50}(\s[a-zA-ZğüşıöçĞÜŞİÖÇ]{2,50})*$/,
-  LASTNAME: /^[a-zA-ZğüşıöçĞÜŞİÖÇ]{2,50}(\s[a-zA-ZğüşıöçĞÜŞİÖÇ]{2,50})*$/,
-  PASSWORD: /^[\p{L}\p{N}\p{P}\p{S}]+$/u,
-};
+  // \p{L}: Unicode harf sinifi. Turkce karakterleri (ğüşıöç) tek tek
+  // saymaya gerek birakmiyor ve ileride eklenecek diller icin de calisiyor.
+  // Aralarda tek bosluk, kesme isareti veya tire kabul edilir:
+  // "Ayşe Nur", "O'Brien", "Ali-Rıza" gecerli.
+  PERSON_NAME: /^\p{L}+(?:[ '-]\p{L}+)*$/u,
+} as const;
