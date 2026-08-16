@@ -3,10 +3,15 @@
 # Postgres bu dosyada YOK: makinede native olarak 5432'de calisiyor ve
 # .env.development zaten ona bakiyor. Sadece eksik olan iki servis burada.
 #
+# PORTLAR VARSAYILAN DEGIL: bu makinede baska bir projenin compose stack'i
+# 6379 (redis) ve 1025/8025 (mailhog) portlarini tutuyor. Ayni Redis'i
+# paylasmak BullMQ kuyruk adlarini cakistirir ve o projenin FLUSHALL'i
+# bizim kuyrugumuzu silerdi; bu yuzden codxus kendi portlarinda calisiyor.
+#
 #   docker compose -f infra/docker-compose.yml up -d
 #   docker compose -f infra/docker-compose.yml down
 #
-# Mailpit arayuzu: http://localhost:8025
+# Mailpit arayuzu: http://localhost:8026
 
 services:
   redis:
@@ -14,7 +19,7 @@ services:
     container_name: codxus-redis
     restart: unless-stopped
     ports:
-      - '6379:6379'
+      - '6380:6379'
     # AOF: kuyruktaki mail isleri container yeniden baslatildiginda kaybolmasin.
     command: ['redis-server', '--appendonly', 'yes']
     volumes:
@@ -30,8 +35,8 @@ services:
     container_name: codxus-mailpit
     restart: unless-stopped
     ports:
-      - '1025:1025' # SMTP
-      - '8025:8025' # Web arayuz
+      - '1026:1025' # SMTP
+      - '8026:8025' # Web arayuz
     environment:
       MP_MAX_MESSAGES: 500
       MP_SMTP_AUTH_ACCEPT_ANY: 1

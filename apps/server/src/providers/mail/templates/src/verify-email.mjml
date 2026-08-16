@@ -1,3 +1,10 @@
+<!--
+  URL degiskenleri triple-stache ({{{...}}}) ile yaziliyor: Handlebars
+  varsayilan escape'i "=" karakterini &#x3D; yapiyor ve link plain-text
+  cikariminda bozuluyor. Bu degerler sunucuda uretiliyor (FRONTEND_URL +
+  base64url token) ve kullanici girdisi icermiyor. Kullanici kaynakli TUM
+  degerler ({{firstName}} gibi) escape'li kalmali.
+-->
 <mjml>
   <mj-head>
     <mj-title>Codxus hesabını doğrula</mj-title>
@@ -18,7 +25,7 @@
           adresinin sana ait olduğunu doğrulaman gerekiyor.
         </mj-text>
 
-        <mj-button href="{{verificationUrl}}" background-color="#2563eb" color="#ffffff" font-size="15px" font-weight="600" border-radius="6px" padding="24px 0">
+        <mj-button href="{{{verificationUrl}}}" background-color="#2563eb" color="#ffffff" font-size="15px" font-weight="600" border-radius="6px" padding="24px 0">
           E-posta adresimi doğrula
         </mj-button>
 
@@ -30,7 +37,7 @@
 
         <mj-text color="#616e7c" font-size="13px" padding-top="16px">
           Buton çalışmıyorsa bu adresi tarayıcına yapıştırabilirsin:<br />
-          <a href="{{verificationUrl}}" style="color:#2563eb; word-break:break-all;">{{verificationUrl}}</a>
+          <a href="{{{verificationUrl}}}" style="color:#2563eb; word-break:break-all;">{{{verificationUrl}}}</a>
         </mj-text>
 
         <mj-divider border-width="1px" border-color="#e4e7eb" padding="24px 0 16px" />

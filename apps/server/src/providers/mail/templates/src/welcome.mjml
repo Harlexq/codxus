@@ -1,3 +1,10 @@
+<!--
+  URL degiskenleri triple-stache ({{{...}}}) ile yaziliyor: Handlebars
+  varsayilan escape'i "=" karakterini &#x3D; yapiyor ve link plain-text
+  cikariminda bozuluyor. Bu degerler sunucuda uretiliyor (FRONTEND_URL +
+  base64url token) ve kullanici girdisi icermiyor. Kullanici kaynakli TUM
+  degerler ({{firstName}} gibi) escape'li kalmali.
+-->
 <mjml>
   <mj-head>
     <mj-title>Codxus'a hoş geldin</mj-title>
@@ -19,7 +26,7 @@
           başlayabilirsin.
         </mj-text>
 
-        <mj-button href="{{appUrl}}" background-color="#2563eb" color="#ffffff" font-size="15px" font-weight="600" border-radius="6px" padding="24px 0">
+        <mj-button href="{{{appUrl}}}" background-color="#2563eb" color="#ffffff" font-size="15px" font-weight="600" border-radius="6px" padding="24px 0">
           Codxus'a git
         </mj-button>
       </mj-column>
