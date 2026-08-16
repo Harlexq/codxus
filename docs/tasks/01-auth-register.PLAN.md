@@ -15,6 +15,12 @@ Brief'in Bölüm 1'i boştu; sorular soruldu ve şu cevaplar alındı:
 | Mail | **Mailpit (docker)** lokalde, prod'da SMTP env'den. Nodemailer + MJML |
 | User enumeration | **Generic 201 + uyarı maili.** `/auth/users` hiçbir koşulda 409 dönmez |
 | Mevcut yarım kod | **Sıfırdan yazılacak**, migration'lar sıfırlanacak |
+| Docker kapsamı | **Yalnız redis + mailpit** compose'a girer. Postgres native olarak 5432'de çalışıyor, dokunulmuyor |
+| Sözleşme onayı | **Şimdi zorunlu** — `acceptTerms` DTO'da zorunlu, frontend'e onay kutusu eklenecek (kullanıcı yapacak) |
+| Adlandırma | **snake_case + `@@map`/`@map`** |
+| Primary key | **`uuid(7)`** |
+
+Bölüm 9'daki 7 kararın tamamı kapandı; hepsinde önerilen seçenek onaylandı. Gerekçe kaydı olarak seçenek tabloları yerinde bırakıldı.
 
 Repodan doğrudan tespit edilenler (sorulmadı):
 
@@ -392,9 +398,10 @@ Ek olarak DB seviyesinde 60 sn cooldown: son token'ın `createdAt`'i 60 sn'den y
 
 | Servis | Image | Port | Not |
 |---|---|---|---|
-| postgres | `postgres:18-alpine` | 5432 | `.env.development`'taki kimlikle birebir |
-| redis | `redis:8-alpine` | 6379 | AOF açık |
+| redis | `redis:8-alpine` | 6379 | AOF açık, named volume |
 | mailpit | `axllent/mailpit` | 1025 / 8025 | SMTP + web arayüz |
+
+Postgres **compose'a girmiyor**: makinede native olarak 5432'de çalışıyor (PID 8084 dinliyor) ve `.env.development` zaten ona bakıyor. Docker Desktop kurulu (v29.3.1) ama daemon kapalı — `docker compose up -d` öncesi başlatılmalı.
 
 ### `.env.example` (yeni değişkenler)
 
@@ -490,7 +497,19 @@ Nest'e özgü kısımlar (`APP_FILTER`/`APP_PIPE` provider'ları, `forRootAsync`
 
 ---
 
-## 9. Senin kararına bıraktıklarım
+## 9. Kararlar (kapandı)
+
+| # | Konu | Seçilen |
+|---|---|---|
+| 1 | Primary key | `uuid(7)` |
+| 2 | Sözleşme / KVKK onayı | Şimdi zorunlu |
+| 3 | Tablo adlandırma | snake_case + `@@map` |
+| 4 | Soft delete + e-posta tekilliği | Partial unique index |
+| 5 | MJML derleme | Build zamanı |
+| 6 | Cache katmanı | Düz ioredis |
+| 7 | Doğrulanmamış kayda tekrar kayıt | Verilere dokunma, sadece yeni token |
+
+Aşağıdaki seçenek tabloları karar gerekçesinin kaydıdır.
 
 ### Karar 1 — Primary key tipi
 
