@@ -1,42 +1,80 @@
+import path from 'path';
+
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { envValidationSchema } from './config/env.validation';
-import path from 'path';
-import { APP_INTERCEPTOR } from '@nestjs/core';
-import { ResponseInterceptor } from './common/interceptors/response.interceptor';
-import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
-import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
-import { LoggerModule } from './core/logger/logger.module';
-import { PrismaModule } from './database/prisma.module';
-import { AccountModule } from './domains/account/account.module';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 
-const ENVIRONMENT = process.env.NODE_ENV || 'development';
+import cookieConfig from '@app/config/cookie.config';
+import { envValidationSchema } from '@app/config/env.validation';
+import { AllExceptionsFilter } from '@app/core/filters/all-exceptions.filter';
+import { LoggingInterceptor } from '@app/core/interceptors/logging.interceptor';
+import { ResponseInterceptor } from '@app/core/interceptors/response.interceptor';
+import { LoggerModule } from '@app/core/logger/logger.module';
+import { RequestIdMiddleware } from '@app/core/middleware/request-id.middleware';
+import { PrismaModule } from '@app/database/prisma.module';
+
+const ENVIRONMENT = process.env.NODE_ENV ?? 'development';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
+      // isGlobal: ConfigService'i her modulde ayrica import etmeden
+      // enjekte edebilmek icin. Config gercekten her yerde lazim olan
+      // birkac seyden biri; global yapmak burada dogru.
       isGlobal: true,
       envFilePath: path.resolve(process.cwd(), '../../', `.env.${ENVIRONMENT}`),
       validationSchema: envValidationSchema,
+      // registerAs ile tanimlanan namespace'li config'ler burada yuklenir;
+      // configService.get('cookie.maxAge') seklinde okunur.
+      load: [cookieConfig],
+    }),
+    I18nModule.forRoot({
+      fallbackLanguage: 'tr',
+      loaderOptions: {
+        // __dirname build sonrasi dist/ oldugu icin ceviriler dist/i18n
+        // altindan okunur; kopyalamayi nest-cli.json assets yapar.
+        path: path.join(__dirname, '/i18n/'),
+        watch: true,
+      },
+      // Dil cozumleyiciler sirayla denenir, ilk sonuc kazanir. Su an sadece
+      // tr var; bunlar simdiden dursun ki ikinci dil eklenince hicbir sey
+      // degismesin. Hicbiri eslesmezse fallbackLanguage kullanilir.
+      resolvers: [
+        { use: QueryResolver, options: ['lang'] },
+        AcceptLanguageResolver,
+      ],
     }),
     LoggerModule,
     PrismaModule,
-    AccountModule,
   ],
-  controllers: [],
   providers: [
+    // APP_FILTER / APP_INTERCEPTOR: global filter ve interceptor'lari DI
+    // uzerinden kaydetmenin yolu. main.ts'teki useGlobalFilters(new X())
+    // yerine bunu kullaniyoruz, boylece bagimliliklari enjekte edilebiliyor.
     {
-      provide: APP_INTERCEPTOR,
-      useClass: ResponseInterceptor,
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
     },
+    // Interceptor sirasi kayit sirasidir: ilk yazilan en distaki katmandir.
+    // LoggingInterceptor once gelmeli ki olculen sure tum zinciri kapsasin.
     {
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor,
     },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ResponseInterceptor,
+    },
   ],
 })
 export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RequestIdMiddleware).forRoutes('*');
+  // Middleware'ler modul seviyesinde baglanir ve guard/interceptor/pipe
+  // zincirinden ONCE calisir. requestId'nin log ve hata zarflarinda hazir
+  // olmasi icin en erken nokta burasi.
+  configure(consumer: MiddlewareConsumer): void {
+    // '{*splat}': Express 5 / path-to-regexp v8 ile gelen yeni wildcard
+    // sozdizimi. Eski '*' artik desteklenmiyor (Nest 11 gecis notu).
+    consumer.apply(RequestIdMiddleware).forRoutes('{*splat}');
   }
 }

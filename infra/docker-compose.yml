@@ -1,0 +1,41 @@
+# Lokal gelistirme bagimliliklari.
+#
+# Postgres bu dosyada YOK: makinede native olarak 5432'de calisiyor ve
+# .env.development zaten ona bakiyor. Sadece eksik olan iki servis burada.
+#
+#   docker compose -f infra/docker-compose.yml up -d
+#   docker compose -f infra/docker-compose.yml down
+#
+# Mailpit arayuzu: http://localhost:8025
+
+services:
+  redis:
+    image: redis:8-alpine
+    container_name: codxus-redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    # AOF: kuyruktaki mail isleri container yeniden baslatildiginda kaybolmasin.
+    command: ['redis-server', '--appendonly', 'yes']
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: codxus-mailpit
+    restart: unless-stopped
+    ports:
+      - '1025:1025' # SMTP
+      - '8025:8025' # Web arayuz
+    environment:
+      MP_MAX_MESSAGES: 500
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+
+volumes:
+  redis-data:

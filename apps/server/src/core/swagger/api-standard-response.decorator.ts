@@ -24,7 +24,7 @@ const buildStandardResponseSchema = (dataSchema: object) => ({
 export const ApiStandardResponse = <T extends Type>(
   model: T,
   options: { status?: 200 | 201; description?: string; isArray?: boolean } = {},
-) => {
+): MethodDecorator & ClassDecorator => {
   const { status = 200, description = 'Başarılı', isArray = false } = options;
 
   const dataSchema = isArray
@@ -43,7 +43,7 @@ export const ApiStandardResponse = <T extends Type>(
 
 export const ApiStandardEmptyResponse = (
   options: { status?: 200 | 201; description?: string } = {},
-) => {
+): MethodDecorator & ClassDecorator => {
   const { status = 200, description = 'Başarılı' } = options;
 
   const schema = buildStandardResponseSchema({ type: 'null', nullable: true });
@@ -56,7 +56,7 @@ export const ApiStandardEmptyResponse = (
 export const ApiPaginatedResponse = <T extends Type>(
   model: T,
   options: { description?: string } = {},
-) => {
+): MethodDecorator & ClassDecorator => {
   const { description = 'Sayfalı liste' } = options;
 
   const schema = buildStandardResponseSchema({

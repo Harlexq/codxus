@@ -1,29 +1,74 @@
+import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import helmet from 'helmet';
+
+import swaggerSetup from '@app/config/swagger.config';
+import { LoggerService } from '@app/core/logger/logger.service';
+
 import { AppModule } from './app.module';
-import swaggerSetup from './config/swagger.config';
-import { AllExceptionsFilter } from './core/filters/all-exceptions.filter';
 
-const PORT = process.env.SERVER_PORT ?? 3000;
+async function bootstrap(): Promise<void> {
+  // bufferLogs: DI container ayaga kalkana kadar uretilen loglar tamponlanir,
+  // useLogger cagrildiktan sonra bizim winston servisimize aktarilir.
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    bufferLogs: true,
+  });
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  // app.get(): DI container'dan bir provider'i elle cekmek icin. Bootstrap
+  // asamasinda constructor injection yapamadigimiz tek yer burasidir.
+  app.useLogger(app.get(LoggerService));
 
-  swaggerSetup(app);
+  const config = app.get(ConfigService);
+
+  // Express varsayilan olarak "X-Powered-By: Express" gonderir; sunucu
+  // parmak izi vermenin bedava yolu, kapatiyoruz. NestExpressApplication
+  // tipi sayesinde express ayarlarina tipli erisiyoruz (getInstance() any doner).
+  app.disable('x-powered-by');
+
+  // CSP, HSTS, X-Frame-Options, X-Content-Type-Options vb.
+  app.use(helmet());
+
+  app.enableCors({
+    origin: config
+      .getOrThrow<string>('CORS_ORIGINS')
+      .split(',')
+      .map((origin) => origin.trim())
+      .filter((origin) => origin.length > 0),
+    credentials: true,
+  });
 
   app.setGlobalPrefix('api');
 
-  app.useGlobalFilters(new AllExceptionsFilter());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      // whitelist: DTO'da tanimsiz alanlari gövdeden siler.
+      whitelist: true,
+      // forbidNonWhitelisted: silmek yerine 400 doner. Sessiz veri kaybi
+      // yerine acik hata; frontend yanlis alan gonderdiginde hemen anlasilir.
+      forbidNonWhitelisted: true,
+      // transform: gelen JSON'u DTO sinifina cevirir; @Transform
+      // dekoratorlerimizin (Trim/TrimLower) calismasi buna bagli.
+      transform: true,
+      transformOptions: { enableImplicitConversion: false },
+    }),
+  );
 
-  await app.listen(PORT);
+  // SIGTERM/SIGINT geldiginde onModuleDestroy ve onApplicationShutdown
+  // hook'lari calisir; Prisma baglantisi duzgun kapanir.
+  app.enableShutdownHooks();
+
+  swaggerSetup(app);
+
+  const port = config.getOrThrow<number>('SERVER_PORT');
+  await app.listen(port);
+
+  const logger = app.get(LoggerService);
+  logger.log('Uygulama basladi', {
+    api: `http://localhost:${String(port)}/api`,
+    docs: `http://localhost:${String(port)}/api/docs`,
+  });
 }
 
-bootstrap()
-  .then(() => {
-    console.log(
-      `The app is now live at http://localhost:${PORT}/api.`,
-      `The application documentation is now available at http://localhost:${PORT}/api/docs.`,
-    );
-  })
-  .catch((err) => {
-    console.log(`An error occurred while the app was launching: ${err}`);
-  });
+void bootstrap();

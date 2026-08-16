@@ -6,7 +6,9 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['eslint.config.mjs'],
+    // src/generated: Prisma'nin urettigi kod. Bizim yazmadigimiz ve her
+    // "prisma generate"da ustune yazilan dosyalari lint'lemek anlamsiz.
+    ignores: ['eslint.config.mjs', 'dist', 'src/generated'],
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
@@ -26,10 +28,17 @@ export default tseslint.config(
   },
   {
     rules: {
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-floating-promises': 'warn',
-      '@typescript-eslint/no-unsafe-argument': 'warn',
-      "prettier/prettier": ["error", { endOfLine: "auto" }],
+      // Brief Bolum 7: any ve non-null assertion yasak.
+      '@typescript-eslint/no-explicit-any': 'error',
+      // Not: bu kural "foo!.bar" ifadelerini yasaklar. DTO alanlarindaki
+      // "email!: string" definite assignment assertion'dir, farkli bir sey
+      // ve class-validator'in standart kullanimidir; kural onu engellemez.
+      '@typescript-eslint/no-non-null-assertion': 'error',
+      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/no-unsafe-argument': 'error',
+      // Her public metodun donus tipi explicit yazilsin (brief Bolum 7).
+      '@typescript-eslint/explicit-module-boundary-types': 'error',
+      'prettier/prettier': ['error', { endOfLine: 'auto' }],
     },
   },
 );

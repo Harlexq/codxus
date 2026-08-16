@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
-const swaggerSetup = (app: INestApplication) => {
+const swaggerSetup = (app: INestApplication): void => {
   const config = new DocumentBuilder()
     .setTitle('Codxus API')
     .setDescription('Codxus API Documentation')
