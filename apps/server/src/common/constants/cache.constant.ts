@@ -1,12 +1,10 @@
 export const CACHE_TTL = {
-  PROFILE: 300,
+  // HIBP yanitlari degismeye cok yavas; 1 saat cache disari giden istegi
+  // ve gecikmeyi ciddi olcude dusuruyor.
   HIBP: 60 * 60,
-  CSRF: 60 * 60,
-  DEFAULT: 300,
 } as const;
 
 export const CACHE_KEYS = {
-  PROFILE: (slug: string) => `profile:${slug}`,
-  PROFILE_PREFIX: 'profile:',
   HIBP_PREFIX: 'hibp:',
+  hibpRange: (prefix: string): string => `hibp:${prefix}`,
 } as const;

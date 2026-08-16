@@ -1,0 +1,36 @@
+<mjml>
+  <mj-head>
+    <mj-title>Codxus hesabın zaten var</mj-title>
+    <mj-attributes>
+      <mj-all font-family="Helvetica, Arial, sans-serif" />
+      <mj-text font-size="15px" line-height="24px" color="#1f2933" />
+    </mj-attributes>
+  </mj-head>
+  <mj-body background-color="#f4f5f7">
+    <mj-section background-color="#ffffff" padding="32px 24px" border-radius="8px">
+      <mj-column>
+        <mj-text font-size="20px" font-weight="700" padding-bottom="16px">
+          Merhaba {{firstName}},
+        </mj-text>
+
+        <mj-text>
+          Az önce bu e-posta adresiyle Codxus'ta yeni bir hesap oluşturulmaya
+          çalışıldı. Adresine kayıtlı bir hesap zaten olduğu için yeni bir
+          hesap oluşturulmadı ve mevcut hesabında hiçbir şey değişmedi.
+        </mj-text>
+
+        <mj-button href="{{loginUrl}}" background-color="#2563eb" color="#ffffff" font-size="15px" font-weight="600" border-radius="6px" padding="24px 0">
+          Giriş yap
+        </mj-button>
+
+        <mj-divider border-width="1px" border-color="#e4e7eb" padding="24px 0 16px" />
+
+        <mj-text color="#616e7c" font-size="13px">
+          Bu denemeyi sen yaptıysan yapman gereken bir şey yok, mevcut
+          hesabınla giriş yapabilirsin. Sen yapmadıysan da endişelenme:
+          hesabına erişilmedi, sadece aynı adresle kayıt denendi.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

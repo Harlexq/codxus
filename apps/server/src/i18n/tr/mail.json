@@ -1,0 +1,11 @@
+{
+  "verify-email": {
+    "subject": "Codxus hesabını doğrula"
+  },
+  "account-exists": {
+    "subject": "Codxus hesabın zaten var"
+  },
+  "welcome": {
+    "subject": "Codxus'a hoş geldin"
+  }
+}

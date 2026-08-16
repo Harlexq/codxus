@@ -1,0 +1,28 @@
+<mjml>
+  <mj-head>
+    <mj-title>Codxus'a hoş geldin</mj-title>
+    <mj-attributes>
+      <mj-all font-family="Helvetica, Arial, sans-serif" />
+      <mj-text font-size="15px" line-height="24px" color="#1f2933" />
+    </mj-attributes>
+  </mj-head>
+  <mj-body background-color="#f4f5f7">
+    <mj-section background-color="#ffffff" padding="32px 24px" border-radius="8px">
+      <mj-column>
+        <mj-text font-size="20px" font-weight="700" padding-bottom="16px">
+          Hoş geldin {{firstName}},
+        </mj-text>
+
+        <mj-text>
+          E-posta adresin doğrulandı ve Codxus hesabın kullanıma hazır.
+          Artık giriş yapabilir, şirketini oluşturup ekibini davet etmeye
+          başlayabilirsin.
+        </mj-text>
+
+        <mj-button href="{{appUrl}}" background-color="#2563eb" color="#ffffff" font-size="15px" font-weight="600" border-radius="6px" padding="24px 0">
+          Codxus'a git
+        </mj-button>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

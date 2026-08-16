@@ -1,7 +1,8 @@
 import path from 'path';
 
+import { BullModule } from '@nestjs/bullmq';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 
@@ -13,6 +14,8 @@ import { ResponseInterceptor } from '@app/core/interceptors/response.interceptor
 import { LoggerModule } from '@app/core/logger/logger.module';
 import { RequestIdMiddleware } from '@app/core/middleware/request-id.middleware';
 import { PrismaModule } from '@app/database/prisma.module';
+import { MailModule } from '@app/providers/mail/mail.module';
+import { parseRedisUrl } from '@app/providers/redis/redis.util';
 
 const ENVIRONMENT = process.env.NODE_ENV ?? 'development';
 
@@ -45,8 +48,17 @@ const ENVIRONMENT = process.env.NODE_ENV ?? 'development';
         AcceptLanguageResolver,
       ],
     }),
+    // BullMQ kok kaydi: baglanti ayarlari burada bir kez verilir, tekil
+    // kuyruklar (MailModule'deki registerQueue gibi) bunu miras alir.
+    BullModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        connection: parseRedisUrl(config.getOrThrow<string>('REDIS_URL')),
+      }),
+    }),
     LoggerModule,
     PrismaModule,
+    MailModule,
   ],
   providers: [
     // APP_FILTER / APP_INTERCEPTOR: global filter ve interceptor'lari DI
