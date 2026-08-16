@@ -1,8 +1,8 @@
-import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import helmet from 'helmet';
+import { I18nValidationPipe } from 'nestjs-i18n';
 
 import swaggerSetup from '@app/config/swagger.config';
 import { LoggerService } from '@app/core/logger/logger.service';
@@ -41,8 +41,12 @@ async function bootstrap(): Promise<void> {
 
   app.setGlobalPrefix('api');
 
+  // I18nValidationPipe: ValidationPipe'in i18n farkindali versiyonu.
+  // Hata mesajlarini burada CEVIRMEZ; I18nValidationException firlatir ve
+  // ceviriyi AllExceptionsFilter yapar. Boylece hatalar da StandardResponse
+  // zarfindan cikar (nestjs-i18n'in kendi filtresi zarfi bozardi).
   app.useGlobalPipes(
-    new ValidationPipe({
+    new I18nValidationPipe({
       // whitelist: DTO'da tanimsiz alanlari gövdeden siler.
       whitelist: true,
       // forbidNonWhitelisted: silmek yerine 400 doner. Sessiz veri kaybi

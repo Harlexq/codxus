@@ -8,6 +8,7 @@ import { HibpModule } from '@app/providers/hibp/hibp.module';
 import { MailModule } from '@app/providers/mail/mail.module';
 
 import { UserModule } from '../user/user.module';
+import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { PasswordService } from './password/password.service';
 import { EmailVerificationTokenService } from './token/email-verification-token.service';
@@ -23,6 +24,7 @@ import { EmailVerificationTokenService } from './token/email-verification-token.
     MailModule,
     HibpModule,
   ],
+  controllers: [AuthController],
   providers: [AuthService, PasswordService, EmailVerificationTokenService],
   exports: [AuthService],
 })

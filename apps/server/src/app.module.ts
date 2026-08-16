@@ -3,8 +3,15 @@ import path from 'path';
 import { BullModule } from '@nestjs/bullmq';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
-import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis';
+import {
+  AcceptLanguageResolver,
+  I18nContext,
+  I18nModule,
+  QueryResolver,
+} from 'nestjs-i18n';
 
 import cookieConfig from '@app/config/cookie.config';
 import { envValidationSchema } from '@app/config/env.validation';
@@ -16,6 +23,7 @@ import { RequestIdMiddleware } from '@app/core/middleware/request-id.middleware'
 import { PrismaModule } from '@app/database/prisma.module';
 import { AuthModule } from '@app/modules/auth/auth.module';
 import { MailModule } from '@app/providers/mail/mail.module';
+import { extractEmailTracker } from '@app/common/utils/throttler.util';
 import { parseRedisUrl } from '@app/providers/redis/redis.util';
 
 const ENVIRONMENT = process.env.NODE_ENV ?? 'development';
@@ -57,6 +65,47 @@ const ENVIRONMENT = process.env.NODE_ENV ?? 'development';
         connection: parseRedisUrl(config.getOrThrow<string>('REDIS_URL')),
       }),
     }),
+    // Rate limit iki BAGIMSIZ boyutta calisiyor (brief Bolum 6):
+    // 'ip'    -> varsayilan tracker (istegin IP'si)
+    // 'email' -> govdedeki e-posta
+    // Ayni istek her iki sayaci da tuketir; biri dolarsa 429 doner.
+    // Buradaki degerler tabandir, endpoint'ler @Throttle ile daraltir.
+    ThrottlerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        // Sayaclar Redis'te: surec yeniden baslayinca sifirlanmaz ve
+        // birden fazla instance ayni limiti paylasir.
+        storage: new ThrottlerStorageRedisService(
+          config.getOrThrow<string>('REDIS_URL'),
+        ),
+        // Varsayilan mesaj Ingilizce ("ThrottlerException: Too Many
+        // Requests") ve zarfin icine oyle giriyordu. Guard, i18n
+        // middleware'inden SONRA calistigi icin I18nContext hazir.
+        errorMessage: (): string => {
+          const translated = I18nContext.current()?.t(
+            'common.TOO_MANY_REQUESTS',
+          );
+
+          return typeof translated === 'string'
+            ? translated
+            : 'Çok fazla istek gönderdiniz.';
+        },
+        throttlers: [
+          { name: 'ip', limit: 100, ttl: 60_000 },
+          {
+            name: 'email',
+            limit: 100,
+            ttl: 60_000,
+            getTracker: (req: Record<string, unknown>) =>
+              `email:${extractEmailTracker(req) ?? ''}`,
+            // Govdesinde e-posta olmayan endpoint'lerde bu boyut hic
+            // calismaz; yoksa hepsi tek ortak sayaca duserdi.
+            skipIf: (context) =>
+              extractEmailTracker(context.switchToHttp().getRequest()) === null,
+          },
+        ],
+      }),
+    }),
     LoggerModule,
     PrismaModule,
     MailModule,
@@ -69,6 +118,12 @@ const ENVIRONMENT = process.env.NODE_ENV ?? 'development';
     {
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,
+    },
+    // Global guard: her endpoint taban limitle korunur, auth uclari
+    // @Throttle ile daha siki degerler kullanir.
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
     },
     // Interceptor sirasi kayit sirasidir: ilk yazilan en distaki katmandir.
     // LoggingInterceptor once gelmeli ki olculen sure tum zinciri kapsasin.
